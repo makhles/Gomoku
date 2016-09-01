@@ -1,4 +1,5 @@
 from PyQt4 import QtGui, QtCore
+import os
 
 class Square(QtGui.QLabel):
 
@@ -17,3 +18,12 @@ class Square(QtGui.QLabel):
 
     def getCoord(self):
         return self.m, self.n
+
+    def setNormal(self):
+        self.setPixmap(QtGui.QPixmap(os.getcwd() + "/BoardSquareNormal.png"))
+
+    def setPlayer1(self):
+        self.setPixmap(QtGui.QPixmap(os.getcwd() + "/BoardSquareP1.png"))
+        
+    def setPlayer2(self):
+        self.setPixmap(QtGui.QPixmap(os.getcwd() + "/BoardSquareP2.png"))

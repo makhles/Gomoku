@@ -1,7 +1,6 @@
 from PyQt4 import QtGui, QtCore
 import Square
 import Board
-import os
 
 class BoardFrame(QtGui.QFrame):
     BoardWidth = 15
@@ -10,8 +9,8 @@ class BoardFrame(QtGui.QFrame):
     def __init__(self, parent):
         super(BoardFrame, self).__init__(parent)
         self.board = Board.Board()
-        self.initBoard()
         self.player = 1
+        self.initBoard()
 
 
     def initBoard(self):
@@ -21,23 +20,22 @@ class BoardFrame(QtGui.QFrame):
             for ii in range(self.BoardWidth):
                 square = Square.Square(self, i, ii)
                 square.setGeometry(m, n, 40, 40)
-                square.setPixmap(QtGui.QPixmap(os.getcwd() + "/BoardSquareNormal.png"))
+                square.setNormal()
                 self.connect(square, QtCore.SIGNAL('clicked()'), self.play)
                 m = m + 40
             n = n + 40
-        self.board
-
+        print(self.board)
 
     def play(self):
         if self.player == 1:
             if(self.board.board[self.sender().m][self.sender().n] == 0):
-                self.sender().setPixmap(QtGui.QPixmap(os.getcwd() + "/BoardSquareP1.png"))
+                self.sender().setPlayer1()
                 m, n = self.sender().getCoord()
                 win = self.board.alterBoard(m, n, self.player)
                 self.player = 2
         else:
             if(self.board.board[self.sender().m][self.sender().n] == 0):
-                self.sender().setPixmap(QtGui.QPixmap(os.getcwd() + "/BoardSquareP2.png"))
+                self.sender().setPlayer2()
                 m, n = self.sender().getCoord()
                 win = self.board.alterBoard(m, n, self.player)
                 self.player = 1
