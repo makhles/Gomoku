@@ -2,17 +2,13 @@ import sys
 import os
 from PyQt4 import QtGui, QtCore
 
-class Example(QtGui.QMainWindow):
+class Window(QtGui.QMainWindow):
 
     def __init__(self):
-        super(Example, self).__init__()
+        super(Window, self).__init__()
         self.initUI()
 
     def initUI(self):
-        player = 1
-
-        self.tboard = Board(self, player)
-        self.setCentralWidget(self.tboard)
 
         exitAction = QtGui.QAction(QtGui.QIcon('exit.png'), 'Exit', self)
         exitAction.setShortcut('Ctrl+Q')
@@ -23,9 +19,12 @@ class Example(QtGui.QMainWindow):
         fileMenu = menubar.addMenu('File')
         fileMenu.addAction(exitAction)
 
+        self.windowBoard = BoardFrame(self)
+        self.setCentralWidget(self.windowBoard)
+
+        self.setWindowTitle('Gomoku')
         self.resize(600, 600)
         self.center()
-        self.setWindowTitle('Gomoku')
 
         self.show()
 
@@ -36,27 +35,25 @@ class Example(QtGui.QMainWindow):
         self.move((screen.width()-size.width())/2,
                   (screen.height()-size.height())/2)
 
-class ExtendedQLabel(QtGui.QLabel):
+class Square(QtGui.QLabel):
 
     def __init__(self, parent, m, n):
         QtGui.QLabel.__init__(self, parent)
+        self.name = 'Square[' + str(m) + '][' + str(n) + ']'
         self.m = m
         self.n = n
-        self.name = 'square_' + str(self.m) + '_' + str(self.n)
 
     def __repr__(self):
         return self.name
 
+    ''' Sobrescrevendo função do QtGui.QLabel'''
     def mouseReleaseEvent(self, ev):
         self.emit(QtCore.SIGNAL('clicked()'))
 
-    def alterBoard(self, board, player):
-        board.board[self.m][self.n] = player
-        win = board.checkWin(self.m, self.n, player)
-        print(board)
-        return win
+    def getCoord(self):
+        return self.m, self.n
 
-class BoardStructure():
+class Board():
     BoardWidth = 15
     BoardHeight = 15
 
@@ -68,6 +65,12 @@ class BoardStructure():
         for i in range(self.BoardHeight):
             board = board + str(self.board[i]) + '\n'
         return board
+
+    def alterBoard(self, m, n, player):
+        self.board[m][n] = player
+        win = self.checkWin(m, n, player)
+        print(self)
+        return win
 
     def checkWin(self, m, n, player):
         print("Checking Win")
@@ -179,15 +182,15 @@ class BoardStructure():
 
         return 0
 
-class Board(QtGui.QFrame):
+class BoardFrame(QtGui.QFrame):
     BoardWidth = 15
     BoardHeight = 15
 
-    def __init__(self, parent, player):
-        super(Board, self).__init__(parent)
-        self.board = BoardStructure()
+    def __init__(self, parent):
+        super(BoardFrame, self).__init__(parent)
+        self.board = Board()
         self.initBoard()
-        self.player = player
+        self.player = 1
 
 
     def initBoard(self):
@@ -195,7 +198,7 @@ class Board(QtGui.QFrame):
         for i in range(self.BoardHeight):
             m = 0
             for ii in range(self.BoardWidth):
-                square = ExtendedQLabel(self, i, ii)
+                square = Square(self, i, ii)
                 square.setGeometry(m, n, 40, 40)
                 square.setPixmap(QtGui.QPixmap(os.getcwd() + "/BoardSquareNormal.png"))
                 self.connect(square, QtCore.SIGNAL('clicked()'), self.play)
@@ -208,12 +211,14 @@ class Board(QtGui.QFrame):
         if self.player == 1:
             if(self.board.board[self.sender().m][self.sender().n] == 0):
                 self.sender().setPixmap(QtGui.QPixmap(os.getcwd() + "/BoardSquareP1.png"))
-                win = self.sender().alterBoard(self.board, self.player)
+                m, n = self.sender().getCoord()
+                win = self.board.alterBoard(m, n, self.player)
                 self.player = 2
         else:
             if(self.board.board[self.sender().m][self.sender().n] == 0):
                 self.sender().setPixmap(QtGui.QPixmap(os.getcwd() + "/BoardSquareP2.png"))
-                win = self.sender().alterBoard(self.board, self.player)
+                m, n = self.sender().getCoord()
+                win = self.board.alterBoard(m, n, self.player)
                 self.player = 1
         if win == 1:
             msg = QtGui.QMessageBox()
@@ -224,7 +229,7 @@ class Board(QtGui.QFrame):
             else:
                 self.player = 1
 
-            msg.setText("Vencedor:  " + str(self.player))
+            msg.setText("Vencedor:  " + str(self.player) + "    ")
             msg.setWindowTitle("Fim de Jogo")
             msg.setStandardButtons(QtGui.QMessageBox.Ok)
             msg.buttonClicked.connect(QtGui.qApp.quit)
@@ -232,7 +237,7 @@ class Board(QtGui.QFrame):
 
 def main():
     app = QtGui.QApplication(sys.argv)
-    ex = Example()
+    window = Window()
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
