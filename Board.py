@@ -1,9 +1,13 @@
+WIN = 1
+DRAW = 2
+
 class Board():
     BoardWidth = 15
     BoardHeight = 15
 
     def __init__(self):
         self.board = [[0 for i in range(self.BoardWidth)] for ii in range(self.BoardHeight)]
+        self.pieces = 0
 
     def __repr__(self):
         board = ''
@@ -11,26 +15,30 @@ class Board():
             board = board + str(self.board[i]) + '\n'
         return board
 
+    def __getitem__(self, key):
+        return self.board[key]
+
     def alterBoard(self, m, n, player):
-        self.board[m][n] = player
+        self[m][n] = player
         win = self.checkWin(m, n, player)
         print(self)
         return win
 
     def checkWin(self, m, n, player):
-        print("Checking Win")
+
         count = 1
+        self.pieces = self.pieces + 1
+        if (self.pieces == 15 * 15):
+            return DRAW
 
         # Vencendo pela diagonal baixo direita
         for i in range(1, 5):
             if (m - i >= 0 and n - i >= 0 and self.board[m - i][n - i] == player):
                 count = count + 1
-                print("Count: " + str(count))
             else:
                 break
         if (count == 5):
-            print("Win")
-            return 1
+            return WIN
         else:
             count = 1
 
@@ -38,12 +46,10 @@ class Board():
         for i in range(1, 5):
             if (m + i <= 14 and n - i >= 0 and self.board[m + i][n - i] == player):
                 count = count + 1
-                print("Count: " + str(count))
             else:
                 break
         if (count == 5):
-            print("Win")
-            return 1
+            return WIN
         else:
             count = 1
 
@@ -51,12 +57,10 @@ class Board():
         for i in range(1, 5):
             if (m - i >= 0 and n + i <= 14 and self.board[m - i][n + i] == player):
                 count = count + 1
-                print("Count: " + str(count))
             else:
                 break
         if (count == 5):
-            print("Win")
-            return 1
+            return WIN
         else:
             count = 1
 
@@ -64,12 +68,10 @@ class Board():
         for i in range(1, 5):
             if (m + i <= 14 and n + i <= 14 and self.board[m + i][n + i] == player):
                 count = count + 1
-                print("Count: " + str(count))
             else:
                 break
         if (count == 5):
-            print("Win")
-            return 1
+            return WIN
         else:
             count = 1
 
@@ -77,12 +79,10 @@ class Board():
         for i in range(1, 5):
             if (n + i <= 14 and self.board[m][n + i] == player):
                 count = count + 1
-                print("Count: " + str(count))
             else:
                 break
         if (count == 5):
-            print("Win")
-            return 1
+            return WIN
         else:
             count = 1
 
@@ -90,12 +90,10 @@ class Board():
         for i in range(1, 5):
             if (n - i >= 0 and self.board[m][n - i] == player):
                 count = count + 1
-                print("Count: " + str(count))
             else:
                 break
         if (count == 5):
-            print("Win")
-            return 1
+            return WIN
         else:
             count = 1
 
@@ -103,12 +101,10 @@ class Board():
         for i in range(1, 5):
             if (m + i <= 14 and self.board[m + i][n] == player):
                 count = count + 1
-                print("Count: " + str(count))
             else:
                 break
         if (count == 5):
-            print("Win")
-            return 1
+            return WIN
         else:
             count = 1
 
@@ -116,12 +112,10 @@ class Board():
         for i in range(1, 5):
             if (m - i >= 0 and self.board[m - i][n] == player):
                 count = count + 1
-                print("Count: " + str(count))
             else:
                 break
         if (count == 5):
-            print("Win")
-            return 1
+            return WIN
         else:
             count = 1
 

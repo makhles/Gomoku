@@ -3,53 +3,39 @@ import Square
 import Board
 
 class BoardFrame(QtGui.QFrame):
+    playSignal = QtCore.pyqtSignal(Square.Square)
     BoardWidth = 15
     BoardHeight = 15
 
     def __init__(self, parent):
         super(BoardFrame, self).__init__(parent)
         self.board = Board.Board()
-        self.player = 1
         self.initBoard()
+
+    def __repr__(self):
+        return self.board
+
+    def __getitem__(self, key):
+        return self.board[key]
 
 
     def initBoard(self):
-        n = 0
-        for i in range(self.BoardHeight):
-            m = 0
-            for ii in range(self.BoardWidth):
-                square = Square.Square(self, i, ii)
-                square.setGeometry(m, n, 40, 40)
-                square.setNormal()
+        i = 0
+        for n in range(self.BoardHeight):
+            ii = 0
+            for m in range(self.BoardWidth):
+                square = Square.Square(self, n, m)
+                square.setGeometry(ii, i, 40, 40)
+                if ((m == 7 and n == 7) or
+                    (m == 4 and n == 4) or (m == 4 and n == 10) or
+                    (m == 10 and n == 4) or (m == 10 and n == 10)):
+                    square.setNormal2()
+                else:
+                    square.setNormal()
                 self.connect(square, QtCore.SIGNAL('clicked()'), self.play)
-                m = m + 40
-            n = n + 40
+                ii = ii + 40
+            i = i + 40
         print(self.board)
 
     def play(self):
-        if self.player == 1:
-            if(self.board.board[self.sender().m][self.sender().n] == 0):
-                self.sender().setPlayer1()
-                m, n = self.sender().getCoord()
-                win = self.board.alterBoard(m, n, self.player)
-                self.player = 2
-        else:
-            if(self.board.board[self.sender().m][self.sender().n] == 0):
-                self.sender().setPlayer2()
-                m, n = self.sender().getCoord()
-                win = self.board.alterBoard(m, n, self.player)
-                self.player = 1
-        if win == 1:
-            msg = QtGui.QMessageBox()
-            msg.setIcon(QtGui.QMessageBox.Warning)
-
-            if self.player == 1:
-                self.player = 2
-            else:
-                self.player = 1
-
-            msg.setText("Vencedor:  " + str(self.player) + "    ")
-            msg.setWindowTitle("Fim de Jogo")
-            msg.setStandardButtons(QtGui.QMessageBox.Ok)
-            msg.buttonClicked.connect(QtGui.qApp.quit)
-            msg.exec_()
+        self.playSignal.emit(self.sender())

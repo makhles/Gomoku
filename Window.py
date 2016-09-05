@@ -34,11 +34,3 @@ class Window(QtGui.QMainWindow):
         size = self.geometry()
         self.move((screen.width()-size.width())/2,
                   (screen.height()-size.height())/2)
-
-def main():
-    app = QtGui.QApplication(sys.argv)
-    window = Window()
-    sys.exit(app.exec_())
-
-if __name__ == "__main__":
-    main()

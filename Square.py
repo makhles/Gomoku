@@ -22,6 +22,9 @@ class Square(QtGui.QLabel):
     def setNormal(self):
         self.setPixmap(QtGui.QPixmap(os.getcwd() + "/img/BoardSquareNormal.png"))
 
+    def setNormal2(self):
+        self.setPixmap(QtGui.QPixmap(os.getcwd() + "/img/BoardSquareNormal2.png"))
+
     def setPlayer1(self):
         self.setPixmap(QtGui.QPixmap(os.getcwd() + "/img/BoardSquareP1.png"))
 
