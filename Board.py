@@ -1,5 +1,6 @@
-WIN = 1
-DRAW = 2
+WIN = 'w'
+DRAW = 'd'
+CONTINUE = 'c'
 
 class Board():
     BoardWidth = 15
@@ -119,4 +120,83 @@ class Board():
         else:
             count = 1
 
-        return 0
+        return CONTINUE
+
+    def evaluate(self, m, n, player):
+
+        points = {}
+        count = 0
+
+        # Vencendo pela diagonal baixo direita
+        for i in range(1, 4):
+            if (m - i >= 0 and n - i >= 0 and self.board[m - i][n - i] == player):
+                count = count + 1
+            else:
+                break
+        points["DiagonalCE"] = count
+        count = 0
+
+        # Vencendo pela diagonal cima direita
+        for i in range(1, 4):
+            if (m + i <= 14 and n - i >= 0 and self.board[m + i][n - i] == player):
+                count = count + 1
+            else:
+                break
+        points["DiagonalBE"] = count
+        count = 0
+
+        # Vencendo pela diagonal baixo esquerda
+        for i in range(1, 4):
+            if (m - i >= 0 and n + i <= 14 and self.board[m - i][n + i] == player):
+                count = count + 1
+            else:
+                break
+        points["DiagonalCD"] = count
+        count = 0
+
+        # Vencendo pela diagonal cima esquerda
+        for i in range(1, 4):
+            if (m + i <= 14 and n + i <= 14 and self.board[m + i][n + i] == player):
+                count = count + 1
+            else:
+                break
+        points["DiagonalBD"] = count
+        count = 0
+
+        # Vencendo pela esquerda
+        for i in range(1, 4):
+            if (n + i <= 14 and self.board[m][n + i] == player):
+                count = count + 1
+            else:
+                break
+        points["Direita"] = count
+        count = 0
+
+        # Vencendo pela direita
+        for i in range(1, 4):
+            if (n - i >= 0 and self.board[m][n - i] == player):
+                count = count + 1
+            else:
+                break
+        points["Esquerda"] = count
+        count = 0
+
+        # Vencendo por Cima
+        for i in range(1, 4):
+            if (m + i <= 14 and self.board[m + i][n] == player):
+                count = count + 1
+            else:
+                break
+        points["Baixo"] = count
+        count = 0
+
+        # Vencendo por Baixo
+        for i in range(1, 5):
+            if (m - i >= 0 and self.board[m - i][n] == player):
+                count = count + 1
+            else:
+                break
+        points["Cima"] = count
+        count = 0
+
+        return points
