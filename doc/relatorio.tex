@@ -69,35 +69,37 @@ class Board():
 
 Uma estrutura a ser considerada é a utilização de um \emph{hash map} que mapeie posições ocupadas às pedras que as ocupam. Nesse caso, tem-se um ganho no consumo de memória utilizada, pois apenas as posições efetivamente ocupadas por pedras brancas ou pretas fazem parte do mapeamento, porém não há nenhum ganho em processamento, visto que uma matriz quadrada de tamanho 15 pode ser armazenada tranquilamente em uma memória cache.
 
+Pensa-se ainda em criar quatro listas referentes às direções de percorrimento do tabuleiro a partir de qualquer pedra: horizontal, vertical e diagonais. Essas listas podem conter as pedras que devem ser percorridas em suas respectivas direções para contabilizar os pontos. Nesse caso, se em uma dada configuração do tabuleiro foi determinado que uma pedra não irá pontuar na direção horizontal (por não haver a possibilidade de se formar uma quíntupla), então essa pedra é removida da lista horizontal. Assim, nas aplicações seguintes da heurística, não há a necessidade de se percorrer horizontalmente a estrutura de dados a partir daquela pedra.
 
 
 
 %----------------------------------------------------------------------------------------
 %	HEURÍSTICA
 %----------------------------------------------------------------------------------------
-
+\newpage
 \section{Heurística e utilidade} \label{sec:heuristica}
 
+A função heurística $h(n)$, onde $n$ se refere à configuração do tabuleiro, pode ser composta de diversas outras definições. A principal heurística a ser utilizada nesse trabalho é dada pela Equação~\ref{eqn:heuristic}.
 
-\begin{equation}
+\begin{equation}\label{eqn:heuristic}
 h(n) = \sum_{i=1}^{5} 10^{2*i} \times seq_i
 \end{equation}
 %
-onde $seq_i$ representa a quantidade de sequências de $i$ pedras consecutivas ou semi-consecutivas, desde que haja a possibilidade de se alcançar 5 pedras consecutivas. Por exemplo, na configuração do tabuleiro da Figura~\ref{fig:heuristic}, tem-se:
+onde $seq_i$ representa a quantidade de sequências de $i$ pedras consecutivas ou semi-consecutivas, desde que haja a possibilidade de se alcançar 5 pedras consecutivas. Por exemplo, na configuração $n$ do tabuleiro da Figura~\ref{fig:heuristic}, tem-se:
 
-\begin{equation}
+\begin{equation*}
 \begin{split}
-h(n) = &10^2 \times {C_{diagonal2} + E_{diagonal1} + F_{vertical} + F_{diagonal2}} + \\
-       &10^4 \times {BE_{diagonal2} + DE_{horizontal}} + \\
-       &10^6 \times {ABC_{horizontal} + CDF_{diagona1}}
+h(n) = &10^2 \times (C_{diagonal2} + E_{diagonal1} + F_{vertical} + F_{diagonal2}) + \\
+       &10^4 \times (BE_{diagonal2} + DE_{horizontal}) + \\
+       &10^6 \times (ABC_{horizontal} + CDF_{diagona1})
 \end{split}
-\end{equation}
+\end{equation*}
 
-\begin{equation}
+\begin{equation*}
 h(n) =  4 \times 10^2 + 2 \times 10^4 + 2 \times 10^6
-\end{equation}
+\end{equation*}
 %
-onde \emph{diagonal1} se refere a uma reta de inclinação positiva e \emph{diagonal2} a uma reta de inclinação negativa. Futuramente, pensa-se em incluir também alguma maneira de conferir mais pontos às configurações em que se pode preencher mais de 5 pedras. Por exemplo, utilizando-se a mesma imagem, a sequência \texttt{ABC} pode gerar as quíntuplas \texttt{xABCx} e \texttt{ABCxx}, o que deve conferir mais pontos que a configuração \texttt{FxDCx}, que é a única forma de se fazer uma quíntupla com as pedras \texttt{C}, \texttt{D} e \texttt{F}.
+onde \emph{diagonal1} se refere a uma reta de inclinação positiva e \emph{diagonal2} a uma reta de inclinação negativa. 
 
 \begin{figure}[!htbp]
     \centering
@@ -106,6 +108,14 @@ onde \emph{diagonal1} se refere a uma reta de inclinação positiva e \emph{diag
     \label{fig:heuristic}
 \end{figure}
 
+A implementação da heurística no código ainda está em fase de desenvolvimento. Não se está utilizando os pesos definidos na Equação~\ref{eqn:heuristic} ainda, apenas soma-se um valor de 10 para cada peça em uma sequência, desde que se possa chegar a uma quíntupla.
+
+Futuramente, pensa-se em incluir também alguma maneira de conferir mais pontos às configurações em que se pode preencher 5 pedras com mais de uma forma. Por exemplo, utilizando-se a mesma imagem, a sequência \texttt{ABC} pode gerar as quíntuplas \texttt{xABCx} e \texttt{ABCxx}, o que deve conferir mais pontos que a configuração \texttt{FxDCx}, que é a única forma de se fazer uma quíntupla com as pedras \texttt{C}, \texttt{D} e \texttt{F}.
+
+Tem-se ainda a possibilidade de incluir heurísticas referentes a determinadas configurações de pedras que levarão a uma vitória independentemente da jogada do humano.
+
+Uma outra abordagem a ser considerada é como fazer a pontuação nas situações em que a configuração do tabuleiro está favorável para a AI, porém muito mais favorável para o jogador humano.
+
 
 %----------------------------------------------------------------------------------------
 %	DETECÇÃO DO FIM DE JOGO
@@ -113,7 +123,7 @@ onde \emph{diagonal1} se refere a uma reta de inclinação positiva e \emph{diag
 
 \section{Detecção do Fim de Jogo} \label{sec:fim_de_jogo}
 
-Nessa implementação parcial do jogo, faz-se a detecção do fim do jogo no método \texttt{checkWin} da classe \texttt{Board}, conforme o trecho de código abaixo apresentado. 
+Nessa implementação parcial do jogo, faz-se a detecção do fim do jogo no método \texttt{checkWin} da classe \texttt{Board}, conforme o trecho de código abaixo apresentado:
 
 \begin{verbatim}
     def checkWin(self, m, n, player):
@@ -214,7 +224,7 @@ Nessa implementação parcial do jogo, faz-se a detecção do fim do jogo no mé
         return CONTINUE
 \end{verbatim}
 
-A função pode retornar os seguintes valores:
+Conta-se o número de pedras conectadas à pedra recém-jogada e retorna-se um dos seguintes valores:
 %
 \begin{itemize}
     \item \textbf{CONTINUE} - o jogo está em andamento (retorno padrão);
@@ -227,7 +237,7 @@ A função pode retornar os seguintes valores:
 %	DETECÇÃO DE SEQUÊNCIAS DE 4 PEÇAS
 %----------------------------------------------------------------------------------------
 
-\section{Detecção de Sequências de 4 Peças}
+%\section{Detecção de Sequências de 4 Peças}
 
 
 
@@ -236,7 +246,7 @@ A função pode retornar os seguintes valores:
 %	REFERÊNCIAS BIBLIOGRÁFICAS
 %----------------------------------------------------------------------------------------
 
-\section{Referências Bibliográficas}
+%\section{Referências Bibliográficas}
 
 
 \end{document}
