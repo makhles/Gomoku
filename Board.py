@@ -40,8 +40,6 @@ class Board():
                 break
         if (count == 5):
             return WIN
-        else:
-            count = 1
 
         # Vencendo pela diagonal cima direita
         for i in range(1, 5):
@@ -62,8 +60,6 @@ class Board():
                 break
         if (count == 5):
             return WIN
-        else:
-            count = 1
 
         # Vencendo pela diagonal cima esquerda
         for i in range(1, 5):
@@ -84,8 +80,6 @@ class Board():
                 break
         if (count == 5):
             return WIN
-        else:
-            count = 1
 
         # Vencendo pela direita
         for i in range(1, 5):
@@ -106,8 +100,6 @@ class Board():
                 break
         if (count == 5):
             return WIN
-        else:
-            count = 1
 
         # Vencendo por Baixo
         for i in range(1, 5):
