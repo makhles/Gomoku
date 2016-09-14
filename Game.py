@@ -20,7 +20,12 @@ class Game(object):
             if(self.window.windowBoard[sender.m][sender.n] == 0):
                 sender.setPlayer1()
                 win = self.window.windowBoard.board.alterBoard(sender.m, sender.n, self.player)
+                for aiPiece in self.aiPieces:
+                    self.aiPieces[aiPiece] = self.window.windowBoard.board.evaluate(aiPiece.m, aiPiece.n, 2)
+                    print(aiPiece)
+                    print(self.aiPieces[aiPiece])
                 self.changePlayer()
+                self.AIplay()
         else:
             if(self.window.windowBoard[sender.m][sender.n] == 0):
                 win = self.window.windowBoard.board.alterBoard(sender.m, sender.n, self.player)
@@ -32,6 +37,16 @@ class Game(object):
                 sender.setPlayer2()
                 self.changePlayer()
         self.checkWin(win)
+
+    def AIplay(self):
+        playData = [None, None, 0]
+        for piece in self.aiPieces:
+            for strategy in self.aiPieces[piece].keys():
+                if (self.aiPieces[piece][strategy] > playData[2]):
+                    playData[0] = piece
+                    playData[1] = strategy
+                    playData[2] = self.aiPieces[piece][strategy]
+        print(playData)
 
 
     def changePlayer(self):
