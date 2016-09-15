@@ -1,216 +1,49 @@
-WIN = 'w'
-DRAW = 'd'
-CONTINUE = 'c'
+from PyQt4 import QtGui, QtCore
+from Definitions import Player, GameState
+from Game import Game
+from Square import Square
 
-class Board():
-    BoardWidth = 15
-    BoardHeight = 15
+class Board(QtGui.QFrame):
+    playSignal = QtCore.pyqtSignal(Square.Square)
+    width = 15
+    height = 15
 
-    def __init__(self):
-        self.board = [[0 for i in range(self.BoardWidth)] for ii in range(self.BoardHeight)]
-        self.pieces = 0
-
-    def __repr__(self):
-        board = ''
-        for i in range(self.BoardHeight):
-            board = board + str(self.board[i]) + '\n'
-        return board
+    def __init__(self, parent, game):
+        super(Board, self).__init__(parent)
+        self.game = game
+        self.initBoard()
 
     def __getitem__(self, key):
         return self.board[key]
 
-    def alterBoard(self, m, n, player):
-        self[m][n] = player
-        win = self.checkWin(m, n, player)
-        print(self)
-        return win
+    def initBoard(self):
+        self.occupiedTiles = []
+        i = 0
+        for n in range(self.height):
+            ii = 0
+            for m in range(self.width):
+                square = Square.Square(self, n, m)
+                square.setGeometry(ii, i, 40, 40)
+                if ((m == 7 and n == 7) or
+                    (m == 4 and n == 4) or (m == 4 and n == 10) or
+                    (m == 10 and n == 4) or (m == 10 and n == 10)):
+                    square.setNormal2()
+                else:
+                    square.setNormal()
+                self.connect(square, QtCore.SIGNAL('clicked()'), self.onTileClicked)
+                ii = ii + 40
+            i = i + 40
+        print(self.board)
 
-    def checkWin(self, m, n, player):
+    def onTileClicked(self):
+        if self.game.state == GameState.RUNNING:
+            self.tile = self.sender()
+            if tile not in occupiedTiles
+                self.occupiedTiles.add(tile)
+                self.game.play()
 
-        count = 1
-        self.pieces = self.pieces + 1
-        if (self.pieces == 15 * 15):
-            return DRAW
-
-        # Vencendo pela diagonal baixo direita
-        for i in range(1, 5):
-            if (m - i >= 0 and n - i >= 0 and self.board[m - i][n - i] == player):
-                count = count + 1
-            else:
-                break
-        if (count == 5):
-            return WIN
-
-        # Vencendo pela diagonal cima direita
-        for i in range(1, 5):
-            if (m + i <= 14 and n - i >= 0 and self.board[m + i][n - i] == player):
-                count = count + 1
-            else:
-                break
-        if (count == 5):
-            return WIN
-        else:
-            count = 1
-
-        # Vencendo pela diagonal baixo esquerda
-        for i in range(1, 5):
-            if (m - i >= 0 and n + i <= 14 and self.board[m - i][n + i] == player):
-                count = count + 1
-            else:
-                break
-        if (count == 5):
-            return WIN
-
-        # Vencendo pela diagonal cima esquerda
-        for i in range(1, 5):
-            if (m + i <= 14 and n + i <= 14 and self.board[m + i][n + i] == player):
-                count = count + 1
-            else:
-                break
-        if (count == 5):
-            return WIN
-        else:
-            count = 1
-
-        # Vencendo pela esquerda
-        for i in range(1, 5):
-            if (n + i <= 14 and self.board[m][n + i] == player):
-                count = count + 1
-            else:
-                break
-        if (count == 5):
-            return WIN
-
-        # Vencendo pela direita
-        for i in range(1, 5):
-            if (n - i >= 0 and self.board[m][n - i] == player):
-                count = count + 1
-            else:
-                break
-        if (count == 5):
-            return WIN
-        else:
-            count = 1
-
-        # Vencendo por Cima
-        for i in range(1, 5):
-            if (m + i <= 14 and self.board[m + i][n] == player):
-                count = count + 1
-            else:
-                break
-        if (count == 5):
-            return WIN
-
-        # Vencendo por Baixo
-        for i in range(1, 5):
-            if (m - i >= 0 and self.board[m - i][n] == player):
-                count = count + 1
-            else:
-                break
-        if (count == 5):
-            return WIN
-        else:
-            count = 1
-
-        return CONTINUE
-
-    def evaluate(self, m, n, player):
-
-        points = {}
-        count = 0
-
-        # Vencendo pela diagonal baixo direita
-        for i in range(1, 5):
-            if (m - i >= 0 and n - i >= 0 and self.board[m - i][n - i] == player):
-                count = count + 10
-            elif (m - i >= 0 and n - i >= 0 and self.board[m - i][n - i] == 0):
-                count = count + 5
-            else:
-                count = 0
-                break
-        points["DiagonalCE"] = count
-        count = 0
-
-        # Vencendo pela diagonal cima direita
-        for i in range(1, 5):
-            if (m + i <= 14 and n - i >= 0 and self.board[m + i][n - i] == player):
-                count = count + 10
-            elif (m + i <= 14 and n - i >= 0 and self.board[m + i][n - i] == 0):
-                count = count + 5
-            else:
-                count = 0
-                break
-        points["DiagonalBE"] = count
-        count = 0
-
-        # Vencendo pela diagonal baixo esquerda
-        for i in range(1, 5):
-            if (m - i >= 0 and n + i <= 14 and self.board[m - i][n + i] == player):
-                count = count + 10
-            elif (m - i >= 0 and n + i <= 14 and self.board[m - i][n + i] == 0):
-                count = count + 5
-            else:
-                count = 0
-                break
-        points["DiagonalCD"] = count
-        count = 0
-
-        # Vencendo pela diagonal cima esquerda
-        for i in range(1, 5):
-            if (m + i <= 14 and n + i <= 14 and self.board[m + i][n + i] == player):
-                count = count + 10
-            elif (m + i <= 14 and n + i <= 14 and self.board[m + i][n + i] == 0):
-                count = count + 5
-            else:
-                count = 0
-                break
-        points["DiagonalBD"] = count
-        count = 0
-
-        # Vencendo pela esquerda
-        for i in range(1, 5):
-            if (n + i <= 14 and self.board[m][n + i] == player):
-                count = count + 10
-            elif (n + i <= 14 and self.board[m][n + i] == 0):
-                count = count + 5
-            else:
-                count = 0
-                break
-        points["Direita"] = count
-        count = 0
-
-        # Vencendo pela direita
-        for i in range(1, 5):
-            if (n - i >= 0 and self.board[m][n - i] == player):
-                count = count + 10
-            elif (n - i >= 0 and self.board[m][n - i] == 0):
-                count = count + 5
-            else:
-                count = 0
-                break
-        points["Esquerda"] = count
-        count = 0
-
-        # Vencendo por Cima
-        for i in range(1, 5):
-            if (m + i <= 14 and self.board[m + i][n] == player):
-                count = count + 10
-            elif (m + i <= 14 and self.board[m + i][n] == 0):
-                count = count + 5
-            else:
-                break
-        points["Baixo"] = count
-        count = 0
-
-        # Vencendo por Baixo
-        for i in range(1, 5):
-            if (m - i >= 0 and self.board[m - i][n] == player):
-                count = count + 10
-            elif (m - i >= 0 and self.board[m - i][n] == 0):
-                count = count + 5
-            else:
-                break
-        points["Cima"] = count
-        count = 0
-
-        return points
+    def update(self):
+        if self.game.player == Player.MAX:
+            self.tile.setBlackStone()
+        else
+            self.tile.setWhiteStone()

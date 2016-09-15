@@ -1,82 +1,58 @@
 import sys
 from PyQt4 import QtGui, QtCore
 import Window
+import Definitions
 
 class Game(object):
 
-    def __init__(self):
-        self.player = 1
+    def __init__(self, gameType, userInterface):
+        self.gameType = gameType
+        self.state = GameState.RUNNING
+        self.player = Player.MAX  # Player 1 is always the MAX
         self.aiPieces = {}
+        if self.gameType == GameType.PvE:
+            self.evaluateHeuristic()
 
-    def startGame(self):
-        app = QtGui.QApplication(sys.argv)
-        self.window = Window.Window()
-        self.window.windowBoard.playSignal.connect(self.play)
-        sys.exit(app.exec_())
+    def play(self, row, col):
+        if (self.gameType == GameType.PvP or
+                (self.gameType == GameType.PvE and self.player == Player.MIN)):
+            self.state = self.checkWinner(row, col)
+            if self.state == GameState.WIN or self.state == GameState.DRAW:
+                self.printResult()
+            else
+                self.player = Player.MAX
+                self.userInterface.update()
+                self.evaluateHeuristic()
 
-    def play(self, sender):
-        win = 0
-        if self.player == 1:
-            if(self.window.windowBoard[sender.m][sender.n] == 0):
-                sender.setPlayer1()
-                win = self.window.windowBoard.board.alterBoard(sender.m, sender.n, self.player)
-                for aiPiece in self.aiPieces:
-                    self.aiPieces[aiPiece] = self.window.windowBoard.board.evaluate(aiPiece.m, aiPiece.n, 2)
-                    print(aiPiece)
-                    print(self.aiPieces[aiPiece])
-                self.changePlayer()
-                self.AIplay()
-        else:
-            if(self.window.windowBoard[sender.m][sender.n] == 0):
-                win = self.window.windowBoard.board.alterBoard(sender.m, sender.n, self.player)
-                self.aiPieces[sender] = {}
-                for aiPiece in self.aiPieces:
-                    self.aiPieces[aiPiece] = self.window.windowBoard.board.evaluate(aiPiece.m, aiPiece.n, 2)
-                    print(aiPiece)
-                    print(self.aiPieces[aiPiece])
-                sender.setPlayer2()
-                self.changePlayer()
-        self.checkWin(win)
+    def checkWinner(row, col):
+        #TODO (pegar da antiga Board)
 
-    def AIplay(self):
-        playData = [None, None, 0]
-        for piece in self.aiPieces:
-            for strategy in self.aiPieces[piece].keys():
-                if (self.aiPieces[piece][strategy] > playData[2]):
-                    playData[0] = piece
-                    playData[1] = strategy
-                    playData[2] = self.aiPieces[piece][strategy]
-        print(playData)
+    def evaluateHeuristic():
+        # TODO
+        self.userInterface.update()
+        self.player = Player.MIN
 
-
-    def changePlayer(self):
-        if (self.player == 1):
-            self.player = 2
-        else:
-            self.player = 1
-
-    def checkWin(self, win):
+    def printResult(self):
         msg = QtGui.QMessageBox()
         msg.setIcon(QtGui.QMessageBox.Warning)
+        msg.setWindowTitle("Game end")
 
-        if win == 'w':
+        if self.state == GameState.WIN:
+            msg.setText("Winner: " + str(self.player) + "    ")
+        else if self.state == GameState.DRAW:
+            msg.setText("Game is a draw!")
 
-            self.changePlayer()
+        msg.setStandardButtons(QtGui.QMessageBox.Ok)
+        msg.exec_()
 
-            msg.setText("Vencedor:  " + str(self.player) + "    ")
-            msg.setWindowTitle("Fim de Jogo")
-            msg.setStandardButtons(QtGui.QMessageBox.Ok)
-            msg.buttonClicked.connect(QtGui.qApp.quit)
-            msg.exec_()
-        if win == 'd':
-            msg.setText("Empate")
-            msg.setWindowTitle("Fim de Jogo")
-            msg.setStandardButtons(QtGui.QMessageBox.Ok)
-            msg.buttonClicked.connect(QtGui.qApp.quit)
-            msg.exec_()
+    def updateTurnPlayer():
+        if self.player == Player.MAX:
+            self.player = Player.MIN
+        else
+            self.player = Player.MAX
 
-def main():
-    Game().startGame()
+    def getstate(self):
+        return self.state
 
-if __name__ == "__main__":
-    main()
+    def getplayer(self):
+        return self.player

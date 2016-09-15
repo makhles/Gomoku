@@ -12,7 +12,6 @@ class Square(QtGui.QLabel):
     def __repr__(self):
         return self.name
 
-    ''' Sobrescrevendo função do QtGui.QLabel'''
     def mouseReleaseEvent(self, ev):
         self.emit(QtCore.SIGNAL('clicked()'))
 
@@ -20,13 +19,13 @@ class Square(QtGui.QLabel):
         return self.m, self.n
 
     def setNormal(self):
-        self.setPixmap(QtGui.QPixmap(os.getcwd() + "/img/BoardSquareNormal.png"))
+        self.setPixmap(QtGui.QPixmap(os.getcwd() + "/img/lightTile.png"))
 
     def setNormal2(self):
-        self.setPixmap(QtGui.QPixmap(os.getcwd() + "/img/BoardSquareNormal2.png"))
+        self.setPixmap(QtGui.QPixmap(os.getcwd() + "/img/darkTile.png"))
 
-    def setPlayer1(self):
-        self.setPixmap(QtGui.QPixmap(os.getcwd() + "/img/BoardSquareP1.png"))
+    def setBlackStone(self):
+        self.setPixmap(QtGui.QPixmap(os.getcwd() + "/img/blackStone.png"))
 
-    def setPlayer2(self):
-        self.setPixmap(QtGui.QPixmap(os.getcwd() + "/img/BoardSquareP2.png"))
+    def setWhiteStone(self):
+        self.setPixmap(QtGui.QPixmap(os.getcwd() + "/img/whiteStone.png"))

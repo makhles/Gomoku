@@ -1,36 +1,52 @@
 import sys
 from PyQt4 import QtGui, QtCore
-import BoardFrame
+from Definitions import GameType
+import Game
 
-class Window(QtGui.QMainWindow):
+class Gomoku(QtGui.QMainWindow):
 
     def __init__(self):
-        super(Window, self).__init__()
+        super(Gomoku, self).__init__()
         self.initUI()
 
     def initUI(self):
-
+        # Exit action
         exitAction = QtGui.QAction(QtGui.QIcon('exit.png'), 'Exit', self)
         exitAction.setShortcut('Ctrl+Q')
         exitAction.setStatusTip('Exit application')
         exitAction.triggered.connect(QtGui.qApp.quit)
 
+        # Menu bar
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('File')
+        fileMenu.addAction('Play against computer', self.startNewGame(GameType.PvE))
+        fileMenu.addAction('Play against player', self.startNewGame(GameType.PvP))
         fileMenu.addAction(exitAction)
 
-        self.windowBoard = BoardFrame.BoardFrame(self)
-        self.setCentralWidget(self.windowBoard)
-
+        # Window properties
         self.setWindowTitle('Gomoku')
         self.resize(600, 600)
         self.center()
-
         self.show()
 
     def center(self):
-
         screen = QtGui.QDesktopWidget().screenGeometry()
         size = self.geometry()
         self.move((screen.width()-size.width())/2,
                   (screen.height()-size.height())/2)
+
+    def startNewGame(self, gameType):
+        self.game = Game(gameType, self)
+        self.board = Board(self, game)
+        self.setCentralWidget(self.board)
+
+    def update(self):
+        self.board.update()
+
+def main():
+    app = QtGui.QApplication(sys.argv)
+    sys.exit(app.exec_())
+    Gomoku()
+
+if __name__ == "__main__":
+    main()
