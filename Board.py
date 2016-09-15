@@ -4,7 +4,6 @@ from Game import Game
 from Square import Square
 
 class Board(QtGui.QFrame):
-    playSignal = QtCore.pyqtSignal(Square.Square)
     width = 15
     height = 15
 
@@ -37,13 +36,13 @@ class Board(QtGui.QFrame):
 
     def onTileClicked(self):
         if self.game.state == GameState.RUNNING:
-            self.tile = self.sender()
-            if tile not in occupiedTiles
+            tile = self.sender()
+            if tile not in self.occupiedTiles:
                 self.occupiedTiles.add(tile)
                 self.game.play()
 
-    def update(self):
+    def update(self, tile):
         if self.game.player == Player.MAX:
-            self.tile.setBlackStone()
-        else
-            self.tile.setWhiteStone()
+            tile.setBlackStone()
+        else:
+            tile.setWhiteStone()

@@ -1,7 +1,8 @@
 import sys
 from PyQt4 import QtGui, QtCore
 from Definitions import GameType
-import Game
+from Game import Game
+from Board import Board
 
 class Gomoku(QtGui.QMainWindow):
 
