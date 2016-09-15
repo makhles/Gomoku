@@ -46,8 +46,8 @@ class Gomoku(QtGui.QMainWindow):
 
 def main():
     app = QtGui.QApplication(sys.argv)
-    sys.exit(app.exec_())
     Gomoku()
+    sys.exit(app.exec_())
 
 if __name__ == "__main__":
     main()

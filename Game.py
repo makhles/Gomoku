@@ -1,5 +1,5 @@
 import sys
-import Definitions
+from Definitions import GameState, GameType, Player
 from PyQt4 import QtGui, QtCore
 
 class Game(object):
