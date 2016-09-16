@@ -6,6 +6,7 @@ class BoardFrame(QtGui.QFrame):
     playSignal = QtCore.pyqtSignal(Square.Square)
     BoardWidth = 15
     BoardHeight = 15
+    squares = {}
 
     def __init__(self, parent):
         super(BoardFrame, self).__init__(parent)
@@ -25,6 +26,7 @@ class BoardFrame(QtGui.QFrame):
             ii = 0
             for m in range(self.BoardWidth):
                 square = Square.Square(self, n, m)
+                self.squares[str(square.m)+","+str(square.n)] = square
                 square.setGeometry(ii, i, 40, 40)
                 if ((m == 7 and n == 7) or
                     (m == 4 and n == 4) or (m == 4 and n == 10) or

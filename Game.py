@@ -1,5 +1,5 @@
+from PyQt4 import QtGui
 import sys
-from PyQt4 import QtGui, QtCore
 import Window
 
 class Game(object):
@@ -7,6 +7,7 @@ class Game(object):
     def __init__(self):
         self.player = 1
         self.aiPieces = {}
+        self.playerPieces = {}
 
     def startGame(self):
         app = QtGui.QApplication(sys.argv)
@@ -18,27 +19,86 @@ class Game(object):
         win = 0
         if self.player == 1:
             if(self.window.windowBoard[sender.m][sender.n] == 0):
+                win = self.window.windowBoard.board.alterBoard(sender.m, sender.n, self.player)
                 sender.setPlayer1()
-                win = self.window.windowBoard.board.alterBoard(sender.m, sender.n, self.player)
+                self.checkWin(win)
+                self.playerPieces[sender] = {}
+                for playerPiece in self.playerPieces:
+                    self.playerPieces[playerPiece] = self.window.windowBoard.board.evaluate(playerPiece.m, playerPiece.n, 1)
                 for aiPiece in self.aiPieces:
                     self.aiPieces[aiPiece] = self.window.windowBoard.board.evaluate(aiPiece.m, aiPiece.n, 2)
-                    print(aiPiece)
-                    print(self.aiPieces[aiPiece])
                 self.changePlayer()
-                self.AIplay()
-        else:
-            if(self.window.windowBoard[sender.m][sender.n] == 0):
-                win = self.window.windowBoard.board.alterBoard(sender.m, sender.n, self.player)
-                self.aiPieces[sender] = {}
-                for aiPiece in self.aiPieces:
-                    self.aiPieces[aiPiece] = self.window.windowBoard.board.evaluate(aiPiece.m, aiPiece.n, 2)
-                    print(aiPiece)
-                    print(self.aiPieces[aiPiece])
-                sender.setPlayer2()
-                self.changePlayer()
+                win = self.AIplay()
         self.checkWin(win)
+        self.changePlayer()
+
 
     def AIplay(self):
+        def direita():
+            i = 1
+            while(self.window.windowBoard.board[playData[0].m][playData[0].n + i] != 0):
+                i += 1
+            self.window.windowBoard.squares[str(playData[0].m)+","+str(playData[0].n+i)].setPlayer2()
+            self.aiPieces[self.window.windowBoard.squares[str(playData[0].m)+","+str(playData[0].n+i)]] = {}
+            win = self.window.windowBoard.board.alterBoard(playData[0].m, playData[0].n + i, self.player)
+            return win
+        def esquerda():
+            i = 1
+            while(self.window.windowBoard.board[playData[0].m][playData[0].n - i] != 0):
+                i += 1
+            self.window.windowBoard.squares[str(playData[0].m)+","+str(playData[0].n-i)].setPlayer2()
+            self.aiPieces[self.window.windowBoard.squares[str(playData[0].m)+","+str(playData[0].n-i)]] = {}
+            win = self.window.windowBoard.board.alterBoard(playData[0].m, playData[0].n - i, self.player)
+            return win
+        def cima():
+            i = 1
+            while(self.window.windowBoard.board[playData[0].m - i][playData[0].n] != 0):
+                i += 1
+            self.window.windowBoard.squares[str(playData[0].m-i)+","+str(playData[0].n)].setPlayer2()
+            self.aiPieces[self.window.windowBoard.squares[str(playData[0].m-i)+","+str(playData[0].n)]] = {}
+            win = self.window.windowBoard.board.alterBoard(playData[0].m - i, playData[0].n, self.player)
+            return win
+        def baixo():
+            i = 1
+            while(self.window.windowBoard.board[playData[0].m + i][playData[0].n] != 0):
+                i += 1
+            self.window.windowBoard.squares[str(playData[0].m+i)+","+str(playData[0].n)].setPlayer2()
+            self.aiPieces[self.window.windowBoard.squares[str(playData[0].m+i)+","+str(playData[0].n)]] = {}
+            win = self.window.windowBoard.board.alterBoard(playData[0].m + i, playData[0].n, self.player)
+            return win
+        def diagonalCE():
+            i = 1
+            while(self.window.windowBoard.board[playData[0].m - i][playData[0].n - i] != 0):
+                i += 1
+            self.window.windowBoard.squares[str(playData[0].m-i)+","+str(playData[0].n-i)].setPlayer2()
+            self.aiPieces[self.window.windowBoard.squares[str(playData[0].m-i)+","+str(playData[0].n-i)]] = {}
+            win = self.window.windowBoard.board.alterBoard(playData[0].m - i, playData[0].n - i, self.player)
+            return win
+        def diagonalBE():
+            i = 1
+            while(self.window.windowBoard.board[playData[0].m + i][playData[0].n - i] != 0):
+                i += 1
+            self.window.windowBoard.squares[str(playData[0].m + i)+","+str(playData[0].n-i)].setPlayer2()
+            self.aiPieces[self.window.windowBoard.squares[str(playData[0].m + i)+","+str(playData[0].n-i)]] = {}
+            win = self.window.windowBoard.board.alterBoard(playData[0].m + i, playData[0].n - i, self.player)
+            return win
+        def diagonalCD():
+            i = 1
+            while(self.window.windowBoard.board[playData[0].m - i][playData[0].n + i] != 0):
+                i += 1
+            self.window.windowBoard.squares[str(playData[0].m - i)+","+str(playData[0].n+i)].setPlayer2()
+            self.aiPieces[self.window.windowBoard.squares[str(playData[0].m - i)+","+str(playData[0].n+i)]] = {}
+            win = self.window.windowBoard.board.alterBoard(playData[0].m - i, playData[0].n + i, self.player)
+            return win
+        def diagonalBD():
+            i = 1
+            while(self.window.windowBoard.board[playData[0].m + i][playData[0].n + i] != 0):
+                i += 1
+            self.window.windowBoard.squares[str(playData[0].m + i)+","+str(playData[0].n+i)].setPlayer2()
+            self.aiPieces[self.window.windowBoard.squares[str(playData[0].m + i)+","+str(playData[0].n+i)]] = {}
+            win = self.window.windowBoard.board.alterBoard(playData[0].m + i, playData[0].n + i, self.player)
+            return win
+
         playData = [None, None, 0]
         for piece in self.aiPieces:
             for strategy in self.aiPieces[piece].keys():
@@ -46,8 +106,30 @@ class Game(object):
                     playData[0] = piece
                     playData[1] = strategy
                     playData[2] = self.aiPieces[piece][strategy]
+        for piece in self.playerPieces:
+            for strategy in self.playerPieces[piece].keys():
+                if (self.playerPieces[piece][strategy] > playData[2]):
+                    playData[0] = piece
+                    playData[1] = strategy
+                    playData[2] = self.playerPieces[piece][strategy]
         print(playData)
-
+        if(playData[1] == "Direita"):
+            win = direita()
+        elif(playData[1] == "Esquerda"):
+            win = esquerda()
+        elif(playData[1] == "Cima"):
+            win = cima()
+        elif(playData[1] == "Baixo"):
+            win = baixo()
+        elif(playData[1] == "DiagonalCE"):
+            win = diagonalCE()
+        elif(playData[1] == "DiagonalBE"):
+            win = diagonalBE()
+        elif(playData[1] == "DiagonalCD"):
+            win = diagonalCD()
+        elif(playData[1] == "DiagonalBD"):
+            win = diagonalBD()
+        return win
 
     def changePlayer(self):
         if (self.player == 1):
@@ -60,8 +142,6 @@ class Game(object):
         msg.setIcon(QtGui.QMessageBox.Warning)
 
         if win == 'w':
-
-            self.changePlayer()
 
             msg.setText("Vencedor:  " + str(self.player) + "    ")
             msg.setWindowTitle("Fim de Jogo")
