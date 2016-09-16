@@ -198,6 +198,7 @@ class Board():
             elif (m + i <= 14 and self.board[m + i][n] == 0):
                 count = count + 5
             else:
+                count = 0
                 break
         points["Baixo"] = count
         count = 0
@@ -209,6 +210,7 @@ class Board():
             elif (m - i >= 0 and self.board[m - i][n] == 0):
                 count = count + 5
             else:
+                count = 0
                 break
         points["Cima"] = count
         count = 0

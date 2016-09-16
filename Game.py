@@ -8,6 +8,7 @@ class Game(object):
         self.player = 1
         self.aiPieces = {}
         self.playerPieces = {}
+        self.emptySpaces = {}
 
     def startGame(self):
         app = QtGui.QApplication(sys.argv)
@@ -27,6 +28,9 @@ class Game(object):
                     self.playerPieces[playerPiece] = self.window.windowBoard.board.evaluate(playerPiece.m, playerPiece.n, 1)
                 for aiPiece in self.aiPieces:
                     self.aiPieces[aiPiece] = self.window.windowBoard.board.evaluate(aiPiece.m, aiPiece.n, 2)
+                # for piece in self.window.windowBoard.squares.values():
+                #     self.emptySpaces[piece] = {}
+                #     self.emptySpaces[piece] = self.window.windowBoard.board.evaluate(piece.m, piece.n, 2)
                 self.changePlayer()
                 win = self.AIplay()
         self.checkWin(win)

@@ -6,11 +6,11 @@ class BoardFrame(QtGui.QFrame):
     playSignal = QtCore.pyqtSignal(Square.Square)
     BoardWidth = 15
     BoardHeight = 15
-    squares = {}
 
     def __init__(self, parent):
         super(BoardFrame, self).__init__(parent)
         self.board = Board.Board()
+        self.squares = {}
         self.initBoard()
 
     def __repr__(self):
