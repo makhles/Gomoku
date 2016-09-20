@@ -1,6 +1,6 @@
 import sys
 from PyQt4 import QtGui, QtCore
-import BoardFrame
+import Board
 
 class Window(QtGui.QMainWindow):
 
@@ -19,7 +19,9 @@ class Window(QtGui.QMainWindow):
         fileMenu = menubar.addMenu('File')
         fileMenu.addAction(exitAction)
 
-        self.windowBoard = BoardFrame.BoardFrame(self)
+        self.windowBoard = Board.Board(self)
+        self.windowBoard.initBoard()
+
         self.setCentralWidget(self.windowBoard)
 
         self.setWindowTitle('Gomoku')
