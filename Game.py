@@ -4,6 +4,7 @@ import Board
 import sys
 import Window
 import math
+from time import sleep
 from sys import maxsize
 INF = maxsize
 
@@ -22,133 +23,219 @@ class Node(object):
 
     def createChildren(self):
         if (self.depth < 0):
-            print("+++++++++++=")
-            print("Retorna")
-            print("+++++++++++=")
-            sys.exit(0)
             return
-        print("--------------------")
-        print("CHILDREN CREATION")
-        print("--------------------")
         print(self.state)
         print(self.value)
-        for i in self.state.squares.values():
-            print("===========")
+        for i in self.state.allPieces:
             print(i)
-            print("===========")
             new_state = Board.Board()
-            new_state.board = self.state.board.copy()
             new_state.squares = self.state.squares.copy()
-            new_state.squares = new_state.alterBoard(i.m, i.n, self.player)
+            new_state.board = deepcopy(self.state.board)
+            new_state.allPieces = new_state.alterBoard(i.m, i.n, self.player)
             self.children.append(Node(self.depth - 1, -self.player, new_state, self.realValue(i)))
-
-        # if (self.depth < 0):
-        #     return
-        # for ii,i in self.state.squares.items():
-        #     new_state = Board.Board()
-        #     new_state.squares = self.state.squares.copy()
-        #     new_state.board = self.state.board.copy()
-        #     new_state.alterBoard(i.m, i.n, self.player)
-        #     self.children.append(Node(self.depth - 1, -self.player, new_state, self.realValue(i)))
 
     def realValue(self, i):
 
-        # return i
-
         points = {}
         attack = 0
+        defesa = 0
         m = i.m
         n = i.n
         player = self.player
 
+
+        if player == -1:
+            else_player = 1
+        else:
+            else_player = -1
+
+        if (self.state.checkWin(m, n, player) == 'w'):
+            return INF
+
         # Vencendo pela diagonal baixo direita
         for i in range(1, 5):
-            if (m - i >= 0 and n - i >= 0 and self.state[m - i][n - i] == player):
+            if (m - i >= 0 and n - i >= 0 and self.state.board[m - i][n - i] == player):
                 attack = math.pow(attack, 5-i) + 10
-            elif (m - i >= 0 and n - i >= 0 and self.state[m - i][n - i] == 0):
+            elif (m - i >= 0 and n - i >= 0 and self.state.board[m - i][n - i] == 0):
                 attack = math.pow(attack, 5-i) + 5
             else:
                 break
-        points["DiagonalCE"] = attack
+        for i in range(1, 5):
+            if (m - i >= 0 and n - i >= 0 and self.state.board[m - i][n - i] == else_player):
+                defesa = math.pow(defesa, 5-i) + 10
+            elif (m - i >= 0 and n - i >= 0 and self.state.board[m - i][n - i] == 0):
+                defesa = math.pow(defesa, 5-i) + 5
+            else:
+                break
+        if attack >= defesa:
+            points["DiagonalCE"] = attack
+        else:
+            points["DiagonalCE"] = defesa
+
         attack = 0
+        defesa = 0
 
         # Vencendo pela diagonal cima direita
         for i in range(1, 5):
-            if (m + i <= 14 and n - i >= 0 and self.state[m + i][n - i] == player):
+            if (m + i <= 14 and n - i >= 0 and self.state.board[m + i][n - i] == player):
                 attack = math.pow(attack, 5-i) + 10
-            elif (m + i <= 14 and n - i >= 0 and self.state[m + i][n - i] == 0):
+            elif (m + i <= 14 and n - i >= 0 and self.state.board[m + i][n - i] == 0):
                 attack = math.pow(attack, 5-i) + 5
             else:
                 break
-        points["DiagonalBE"] = attack
+        for i in range(1, 5):
+            if (m + i <= 14 and n - i >= 0 and self.state.board[m + i][n - i] == else_player):
+                defesa = math.pow(defesa, 5-i) + 10
+            elif (m + i <= 14 and n - i >= 0 and self.state.board[m + i][n - i] == 0):
+                defesa = math.pow(defesa, 5-i) + 5
+            else:
+                break
+        if attack >= defesa:
+            points["DiagonalBE"] = attack
+        else:
+            points["DiagonalBE"] = defesa
+
         attack = 0
+        defesa = 0
 
         # Vencendo pela diagonal baixo esquerda
         for i in range(1, 5):
-            if (m - i >= 0 and n + i <= 14 and self.state[m - i][n + i] == player):
+            if (m - i >= 0 and n + i <= 14 and self.state.board[m - i][n + i] == player):
                 attack = math.pow(attack, 5-i) + 10
-            elif (m - i >= 0 and n + i <= 14 and self.state[m - i][n + i] == 0):
+            elif (m - i >= 0 and n + i <= 14 and self.state.board[m - i][n + i] == 0):
                 attack = math.pow(attack, 5-i) + 5
             else:
                 break
-        points["DiagonalCD"] = attack
+        for i in range(1, 5):
+            if (m - i >= 0 and n + i <= 14 and self.state.board[m - i][n + i] == else_player):
+                defesa = math.pow(defesa, 5-i) + 10
+            elif (m - i >= 0 and n + i <= 14 and self.state.board[m - i][n + i] == 0):
+                defesa = math.pow(defesa, 5-i) + 5
+            else:
+                break
+        if attack >= defesa:
+            points["DiagonalCD"] = attack
+        else:
+            points["DiagonalCD"] = defesa
+
         attack = 0
+        defesa = 0
 
         # Vencendo pela diagonal cima esquerda
         for i in range(1, 5):
-            if (m + i <= 14 and n + i <= 14 and self.state[m + i][n + i] == player):
+            if (m + i <= 14 and n + i <= 14 and self.state.board[m + i][n + i] == player):
                 attack = math.pow(attack, 5-i) + 10
-            elif (m + i <= 14 and n + i <= 14 and self.state[m + i][n + i] == 0):
+            elif (m + i <= 14 and n + i <= 14 and self.state.board[m + i][n + i] == 0):
                 attack = math.pow(attack, 5-i) + 5
             else:
                 break
-        points["DiagonalBD"] = attack
+        for i in range(1, 5):
+            if (m + i <= 14 and n + i <= 14 and self.state.board[m + i][n + i] == else_player):
+                defesa = math.pow(defesa, 5-i) + 10
+            elif (m + i <= 14 and n + i <= 14 and self.state.board[m + i][n + i] == 0):
+                defesa = math.pow(defesa, 5-i) + 5
+            else:
+                break
+        if attack >= defesa:
+            points["DiagonalBD"] = attack
+        else:
+            points["DiagonalBD"] = defesa
+
         attack = 0
+        defesa = 0
 
         # Vencendo pela esquerda
         for i in range(1, 5):
-            if (n + i <= 14 and self.state[m][n + i] == player):
+            if (n + i <= 14 and self.state.board[m][n + i] == player):
                 attack = math.pow(attack, 5-i) + 10
-            elif (n + i <= 14 and self.state[m][n + i] == 0):
+            elif (n + i <= 14 and self.state.board[m][n + i] == 0):
                 attack = math.pow(attack, 5-i) + 5
             else:
                 break
-        points["Direita"] = attack
+        for i in range(1, 5):
+            if (n + i <= 14 and self.state.board[m][n + i] == else_player):
+                defesa = math.pow(defesa, 5-i) + 10
+            elif (n + i <= 14 and self.state.board[m][n + i] == 0):
+                defesa = math.pow(defesa, 5-i) + 5
+            else:
+                break
+        if attack >= defesa:
+            points["Direita"] = attack
+        else:
+            points["Direita"] = defesa
+
         attack = 0
+        defesa = 0
 
         # Vencendo pela direita
         for i in range(1, 5):
-            if (n - i >= 0 and self.state[m][n - i] == player):
+            if (n - i >= 0 and self.state.board[m][n - i] == player):
                 attack = math.pow(attack, 5-i) + 10
-            elif (n - i >= 0 and self.state[m][n - i] == 0):
+            elif (n - i >= 0 and self.state.board[m][n - i] == 0):
                 attack = math.pow(attack, 5-i) + 5
             else:
                 break
-        points["Esquerda"] = attack
+        for i in range(1, 5):
+            if (n - i >= 0 and self.state.board[m][n - i] == else_player):
+                defesa = math.pow(defesa, 5-i) + 10
+            elif (n - i >= 0 and self.state.board[m][n - i] == 0):
+                defesa = math.pow(defesa, 5-i) + 5
+            else:
+                break
+        if attack >= defesa:
+            points["Esquerda"] = attack
+        else:
+            points["Esquerda"] = defesa
+
         attack = 0
+        defesa = 0
 
         # Vencendo por Cima
         for i in range(1, 5):
-            if (m + i <= 14 and self.state[m + i][n] == player):
+            if (m + i <= 14 and self.state.board[m + i][n] == player):
                 attack = math.pow(attack, 5-i) + 10
-            elif (m + i <= 14 and self.state[m + i][n] == 0):
+            elif (m + i <= 14 and self.state.board[m + i][n] == 0):
                 attack = math.pow(attack, 5-i) + 5
             else:
                 break
-        points["Baixo"] = attack
+        for i in range(1, 5):
+            if (m + i <= 14 and self.state.board[m + i][n] == else_player):
+                defesa = math.pow(defesa, 5-i) + 10
+            elif (m + i <= 14 and self.state.board[m + i][n] == 0):
+                defesa = math.pow(defesa, 5-i) + 5
+            else:
+                break
+        if attack >= defesa:
+            points["Baixo"] = attack
+        else:
+            points["Baixo"] = defesa
+
         attack = 0
+        defesa = 0
 
         # Vencendo por Baixo
         for i in range(1, 5):
-            if (m - i >= 0 and self.state[m - i][n] == player):
+            if (m - i >= 0 and self.state.board[m - i][n] == player):
                 attack = math.pow(attack, 5-i) + 10
-            elif (m - i >= 0 and self.state[m - i][n] == 0):
+            elif (m - i >= 0 and self.state.board[m - i][n] == 0):
                 attack = math.pow(attack, 5-i) + 5
             else:
                 attack = 0
                 break
-        points["Cima"] = attack
+        for i in range(1, 5):
+            if (m - i >= 0 and self.state.board[m - i][n] == else_player):
+                defesa = math.pow(defesa, 5-i) + 10
+            elif (m - i >= 0 and self.state.board[m - i][n] == 0):
+                defesa = math.pow(defesa, 5-i) + 5
+            else:
+                break
+        if attack >= defesa:
+            points["Cima"] = attack
+        else:
+            points["Cima"] = defesa
+
         attack = 0
+        defesa = 0
 
         maxPoint = 0
         for strategy,point in points.items():
@@ -156,7 +243,6 @@ class Node(object):
                 maxPoint = point
 
         return maxPoint
-
 
 
 class Game(object):
@@ -178,25 +264,23 @@ class Game(object):
         if self.player == -1:
             if(self.window.windowBoard[sender.m][sender.n] == 0):
                 self.emptySpaces = self.window.windowBoard.alterBoard(sender.m, sender.n, self.player)
-                sender.setPlayer1()
+                self.window.windowBoard.update()
                 win = self.checkWin(sender.m, sender.n, self.player)
                 self.wonMesage(win)
                 self.changePlayer()
-                node = Node(2, self.player, self.window.windowBoard)
-                sys.exit(0)
+                node = Node(3, self.player, self.window.windowBoard)
                 i_bestValue = -self.player * INF
                 for i in range(len(node.children)):
                     n_children = node.children[i]
-                    val = minMax(n_children, 2, self.player)
+                    val = self.minMax(n_children, 3, self.player)
                     if abs(self.player * INF - val) <= abs(self.player * INF - i_bestValue):
                         i_bestValue = val
                         bestChoice = i
-                        print(bestChoice)
-                        print(i_bestValue)
-        # self.wonMesage(win)
+                self.window.windowBoard = node.children[bestChoice].state
+                self.window.windowBoard.update()
         self.changePlayer()
 
-    def minMax(node, depth, player):
+    def minMax(self, node, depth, player):
         if (depth == 0) or (abs(node.value) == INF):
             return node.value
 
@@ -204,13 +288,12 @@ class Game(object):
         print(node.value)
 
         for child in node.children:
-            val = minMax(child, depth-1, -player)
+            val = self.minMax(child, depth-1, -player)
             if (abs(INF * player - val) < abs(INF*player-bestValue)):
                 bestValue = val
 
         return bestValue
     def AIplay(self):
-        playData = [None, None, 0]
         playData[0].setPlayer2()
         self.window.windowBoard.alterBoard(playData[0].m, playData[0].n, self.player)
         win = self.checkWin(playData[0].m, playData[0].n, self.player)
