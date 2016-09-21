@@ -12,16 +12,13 @@ class Board(QtGui.QFrame):
         self.game = game
         self.initBoard()
 
-    def __getitem__(self, key):
-        return self.board[key]
-
     def initBoard(self):
         self.occupiedTiles = []
         i = 0
         for n in range(self.height):
             ii = 0
             for m in range(self.width):
-                square = Square.Square(self, n, m)
+                square = Square(self, n, m)
                 square.setGeometry(ii, i, 40, 40)
                 if ((m == 7 and n == 7) or
                     (m == 4 and n == 4) or (m == 4 and n == 10) or
@@ -32,7 +29,7 @@ class Board(QtGui.QFrame):
                 self.connect(square, QtCore.SIGNAL('clicked()'), self.onTileClicked)
                 ii = ii + 40
             i = i + 40
-        print(self.board)
+        print(self)
 
     def onTileClicked(self):
         if self.game.state == GameState.RUNNING:

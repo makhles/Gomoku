@@ -27,4 +27,4 @@ class StoneType(Enum):
 class GameState(Enum):
     WIN = 0
     DRAW = 1
-    CONTINUE = 2
+    RUNNING = 2

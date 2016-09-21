@@ -6,8 +6,9 @@ class Game(object):
 
     def __init__(self, gameType, userInterface):
         self.gameType = gameType
-        self.state = GameState.RUNNING
+        self.userInterface = userInterface
         self.player = Player.MAX  # Player 1 is always the MAX
+        self.state = GameState.RUNNING
         self.aiPieces = {}
         if self.gameType == GameType.PvE:
             self.evaluateHeuristic()

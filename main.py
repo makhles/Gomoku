@@ -20,8 +20,8 @@ class Gomoku(QtGui.QMainWindow):
         # Menu bar
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('File')
-        fileMenu.addAction('Play against computer', self.startNewGame(GameType.PvE))
-        fileMenu.addAction('Play against player', self.startNewGame(GameType.PvP))
+        fileMenu.addAction('Play against computer', self.startNewPvEGame, "Ctrl+E")
+        fileMenu.addAction('Play against player', self.startNewPvPGame, "Ctrl+P")
         fileMenu.addAction(exitAction)
 
         # Window properties
@@ -36,13 +36,20 @@ class Gomoku(QtGui.QMainWindow):
         self.move((screen.width()-size.width())/2,
                   (screen.height()-size.height())/2)
 
+    def startNewPvPGame(self):
+        startNewGame(GameType.PvP)
+
+    def startNewPvEGame(self):
+        startNewGame(GameType.PvE)
+
     def startNewGame(self, gameType):
         self.game = Game(gameType, self)
-        self.board = Board(self, game)
+        self.board = Board(self, self.game)
         self.setCentralWidget(self.board)
 
     def update(self):
-        self.board.update()
+        print(self)
+        #self.board.update()
 
 def main():
     app = QtGui.QApplication(sys.argv)
